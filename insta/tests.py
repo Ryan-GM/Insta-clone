@@ -33,3 +33,8 @@ class TestPost(TestCase):
         self.image_test.save_image()
         images = Post.objects.all()
         self.assertTrue(len(images) > 0)
+
+    def test_delete_image(self):
+        self.image_test.delete_image()
+        after = Profile.objects.all()
+        self.assertTrue(len(after) < 1)
