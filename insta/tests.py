@@ -19,6 +19,10 @@ class TestProfile(TestCase):
         after = Profile.objects.all()
         self.assertTrue(len(after) > 0)
 
+    def tearDown(self):
+        Profile.objects.all().delete()
+        Post.objects.all().delete()
+
 class TestPost(TestCase):
     def setUp(self):
         self.profile_test = Profile(name='ryan', user=User(username='mikey'))
