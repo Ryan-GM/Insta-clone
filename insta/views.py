@@ -5,6 +5,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login,authenticate
 from .forms import PostForm,UpdateUserForm,CommentForm,SignUpForm,UpdateUserProfileForm
 from django.http import HttpResponseRedirect,JsonResponse
+from django.template.loader import render_to_string
+from django.views.generic import RedirectView
+from rest_framework.views import APIView
+from rest_framework import authentication,permissions
+from rest_framework.response import Response 
 # Create your views here.
 
 @login_required(login_url='login')
