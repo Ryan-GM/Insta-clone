@@ -167,7 +167,7 @@ def like_post(request):
         'total_likes': image.total_likes()
     }
     if request.is_ajax():
-        html = render_to_string('instagram/like_section.html', params, request=request)
+        html = render_to_string('insta/like.html', params, request=request)
         return JsonResponse({'form': html})
 
 
@@ -185,7 +185,7 @@ def search_profile(request):
         return render(request, 'instagram/results.html', params)
     else:
         message = "You haven't searched for any image category"
-    return render(request, 'instagram/results.html', {'message': message})
+    return render(request, 'insta/results.html', {'message': message})
 
 
 def unfollow(request, to_unfollow):
