@@ -8,7 +8,7 @@ Ryan Munge
 
 This is a clone of the website for the popular photo app instagram which would be accessible to users on both desktop and mobile formats.
 Allows people to share their images and videos for other users to view after signinng up.
-[View]()
+[View]("https://insta-cl0ne3.herokuapp.com/account/login/?next=/")
 
 ## User Story
 
@@ -54,7 +54,9 @@ Allows people to share their images and videos for other users to view after sig
 * Python 3.7
 * Django
 * Heroku 
+## Known Bugs
 
+Some of the images are not displaying
 ## License
 
 * MIT
