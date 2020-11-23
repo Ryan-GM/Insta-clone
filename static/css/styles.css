@@ -35,12 +35,12 @@ h1{
 }
 .instaicon{
     display: inline-block;
-    background-image: url(/static/images/dem.png);
+    background-image: url(../images/dem.png);
     padding:0px;
 }
 .instaglyph{
     display: inline-block;
-    background-image: url(/static/images/figapng);
+    background-image: url(../images/figa.png);
     margin:8px;
 }
 .modal-body a{
