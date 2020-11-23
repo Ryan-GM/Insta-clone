@@ -4,8 +4,8 @@ from insta.views import PostLikeAPIToggle,PostLikeToggle
 from . import views
 from django.urls import path
 urlpatterns = [
-    url('signup/', views.signup, name='signup'),
-    url('account/', include('django.contrib.auth.urls')),
+    path('signup/', views.signup, name='signup'),
+    path('account/', include('django.contrib.auth.urls')),
     url('', views.index, name='index'),
     path('profile/<username>/', views.profile, name='profile'),
     path('user_profile/<username>/', views.user_profile, name='user_profile'),
