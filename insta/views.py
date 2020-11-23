@@ -1,16 +1,31 @@
-from django.shortcuts import render,redirect,get_object_or_404
-from .models import Post,Profile,Comment,Follow
-from django.contrib.auth.models import User
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login,authenticate
-from .forms import PostForm,UpdateUserForm,CommentForm,SignUpForm,UpdateUserProfileForm
-from django.http import HttpResponseRedirect,JsonResponse
+from .forms import SignUpForm, UpdateUserForm, UpdateUserProfileForm, PostForm, CommentForm
+from django.contrib.auth import login, authenticate
+from .models import Post, Comment, Profile, Follow
+from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.views.generic import RedirectView
 from rest_framework.views import APIView
-from rest_framework import authentication,permissions
-from rest_framework.response import Response 
-# Create your views here.
+from rest_framework.response import Response
+from rest_framework import authentication, permissions
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('index')
+    else:
+        form = SignUpForm()
+    return render(request, 'registration/signup.html', {'form': form})
+
 
 @login_required(login_url='login')
 def index(request):
@@ -33,11 +48,12 @@ def index(request):
     }
     return render(request, 'insta/index.html', params)
 
+
 @login_required(login_url='login')
-def profile(request, username):
+def profile(request, username=None):
     images = request.user.profile.posts.all()
     if request.method == 'POST':
-        user_form = UpdateUserForm(request.POST, instance=request.user)
+        user_form = UpdateUserForm(request.POST, instance=request.user, username=username)
         prof_form = UpdateUserProfileForm(request.POST, request.FILES, instance=request.user.profile)
         if user_form.is_valid() and prof_form.is_valid():
             user_form.save()
@@ -54,23 +70,10 @@ def profile(request, username):
     }
     return render(request, 'insta/profile.html', params)
 
-def signup(request):
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
-            login(request, user)
-            return redirect('index')
-    else:
-        form = SignUpForm()
-    return render(request, 'registration/signup.html', {'form': form})
 
 @login_required(login_url='login')
 def user_profile(request, username):
-    user_prof = get_object_or_404(User, username=username)
+    user_prof = get_object_or_404(username=username)
     if request.user == user_prof:
         return redirect('profile', username=request.user.username)
     user_posts = user_prof.profile.posts.all()
@@ -90,6 +93,7 @@ def user_profile(request, username):
     }
     print(followers)
     return render(request, 'insta/user_profile.html', params)
+
 
 @login_required(login_url='login')
 def post_comment(request, id):
@@ -115,6 +119,7 @@ def post_comment(request, id):
     }
     return render(request, 'insta/post.html', params)
 
+
 class PostLikeToggle(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         id = self.kwargs.get('id')
@@ -134,7 +139,7 @@ class PostLikeAPIToggle(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, id=None, format=None):
-        # id = self.kwargs.get('id')
+        id = self.kwargs.get('id')
         obj = get_object_or_404(Post, pk=id)
         url_ = obj.get_absolute_url()
         user = self.request.user
@@ -157,6 +162,7 @@ class PostLikeAPIToggle(APIView):
 
 
 def like_post(request):
+    image = get_object_or_404(Post, id=request.POST.get('image_id'))
     image = get_object_or_404(Post, id=request.POST.get('id'))
     is_liked = False
     if image.likes.filter(id=request.user.id).exists():
@@ -187,7 +193,7 @@ def search_profile(request):
             'results': results,
             'message': message
         }
-        return render(request, 'instagram/results.html', params)
+        return render(request, 'insta/results.html', params)
     else:
         message = "You haven't searched for any image category"
     return render(request, 'insta/results.html', {'message': message})
